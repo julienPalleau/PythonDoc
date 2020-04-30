@@ -1,0 +1,684 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+<link href="https://files.realpython.com" rel="preconnect">
+<title>The Pandas DataFrame: Make Working With Data Delightful – Real Python</title>
+<meta name="author" content="Real Python">
+<meta name="description" content="In this tutorial, you&#39;ll get started with Pandas DataFrames, which are powerful and widely used two-dimensional data structures. You&#39;ll learn how to perform basic operations with data, handle missing values, work with time-series data, and visualize data from a Pandas DataFrame.">
+<meta name="keywords" content="">
+<meta name="robots" content="noindex">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="/static/gfonts/font.32be62914940.css">
+<link rel="stylesheet" href="/static/realpython.min.02b677b0fce9.css">
+<link href="/static/favicon.68cbf4197b0c.png" rel="icon">
+<link href="https://realpython.com/atom.xml" rel="alternate" title="Real Python" type="application/atom+xml">
+<link rel="manifest" href="/manifest.json">
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-35184939-1', 'auto', {'allowLinker': true});
+  
+    ga('set', 'anonymizeIp', true);
+  
+  
+  ga('send', 'pageview');
+  
+</script>
+</head>
+<body>
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark flex-column">
+<div class="container flex-row">
+<a class="navbar-brand" href="/">
+<img src="/static/real-python-logo.893c30edea53.svg" height="40" class="d-inline-block align-top" alt="Real Python">
+</a>
+<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+<span class="navbar-toggler-icon"></span>
+</button>
+<div class="collapse navbar-collapse" id="navbarSupportedContent">
+<ul class="navbar-nav mr-2 flex-fill">
+<li class="nav-item">
+<a class="nav-link" href="/start-here/">Start&nbsp;Here</a>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownLibrary" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<span class="fa fa-graduation-cap"></span> Learn Python
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownLibrary">
+<a class="dropdown-item" href="/" style="color: #ff7e73; line-height: 110%;"><i class="fa fa-fw mr-1 fa-graduation-cap"></i> Python Tutorials →<br><small class="text-secondary">In-depth articles and tutorials</small></a>
+<a class="dropdown-item" href="/courses/" style="color: #abe5b1; line-height: 110%;"><i class="fa fa-fw mr-1 fa-film"></i> Video Courses →<br><small class="text-secondary">Step-by-step video lessons</small></a>
+<a class="dropdown-item" href="/quizzes/" style="color: #abe0e5; line-height: 110%;"><i class="fa fa-fw mr-1 fa-trophy"></i> Quizzes →<br><small class="text-secondary">Check your learning progress</small></a>
+<a class="dropdown-item" href="/learning-paths/" style="color: #ffc873; line-height: 110%;"><i class="fa fa-fw mr-1 fa-map-o"></i> Learning Paths →<br><small class="text-secondary">Guided study plans for accelerated learning</small></a>
+<a class="dropdown-item" href="/community/" style="color: #e5c6ab; line-height: 110%;"><i class="fa fa-fw mr-1 fa-slack"></i> Community →<br><small class="text-secondary">Learn with other Pythonistas</small></a>
+<a class="dropdown-item pb-3" href="/tutorials/all/" style="color: #b8abe5; line-height: 110%;"><i class="fa fa-fw mr-1 fa-tags"></i> Topics →<br><small class="text-secondary">Focus on a specific area or skill level</small></a>
+<a class="dropdown-item border-top" href="/account/join/"><i class="fa fa-fw fa-star text-warning"></i> Unlock All Content</a>
+</div>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownBooksCourses" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+Store
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownBooksCourses">
+<a class="dropdown-item" href="/account/join/"><i class="fa fa-fw fa-star text-warning"></i> RP Membership</a>
+<a class="dropdown-item" href="/products/python-basics-book/">Python Basics Book</a>
+<a class="dropdown-item" href="/products/python-tricks-book/">Python Tricks Book</a>
+<a class="dropdown-item" href="/products/real-python-course/">The Real Python Course</a>
+<a class="dropdown-item" href="/products/managing-python-dependencies/">Managing Python Dependencies</a>
+<a class="dropdown-item" href="/products/sublime-python/">Sublime Text + Python Setup</a>
+<a class="dropdown-item" href="/products/pythonic-wallpapers/">Pythonic Wallpapers Pack</a>
+<a class="dropdown-item" href="https://nerdlettering.com" target="_blank">Python Mugs, T-Shirts, and More</a>
+<a class="dropdown-item" href="https://www.pythonistacafe.com" target="_blank">Pythonista Cafe Community</a>
+<a class="dropdown-item border-top" href="/products/">Browse All »</a>
+</div>
+</li>
+<li class="nav-item dropdown">
+<a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMore" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+More
+</a>
+<div class="dropdown-menu" aria-labelledby="navbarDropdownMore">
+<a class="dropdown-item" href="/newsletter/">Python Newsletter</a>
+<a class="dropdown-item" href="/podcasts/rpp/">Python Podcast</a>
+<a class="dropdown-item" href="https://www.pythonjobshq.com" target="_blank">Python Job Board</a>
+<a class="dropdown-item" href="/team/">Meet the Team</a>
+<a class="dropdown-item" href="/write-for-us/">Become a Tutorial Author</a>
+<a class="dropdown-item" href="/become-an-instructor/">Become a Video Instructor</a>
+</div>
+</li>
+</ul>
+<div class="d-block d-xl-none">
+<ul class="navbar-nav">
+<li class="nav-item">
+<a class="nav-link" href="/search" title="Search"><span class="d-block d-lg-none"><i class="fa fa-search"></i> Search</span><span class="d-none d-lg-block"><i class="fa fa-search"></i></span></a>
+</li>
+</ul>
+</div>
+<div class="d-none d-xl-block">
+<form class="form-inline my-2 my-lg-0 mr-2 flex-fill" action="/search" method="GET">
+<input class="search-field form-control form-control-md mr-sm-1 mr-lg-2 w-100" type="search" placeholder="Search&hellip;" aria-label="Search" name="q">
+</form>
+</div>
+<ul class="navbar-nav">
+<li class="nav-item form-inline mr-2">
+<a class="btn btn-sm btn-primary px-3" href="/account/join/">Join</a>
+</li>
+<li class="nav-item dropdown">
+<a class="ml-2 ml-lg-0 btn text-light p-0 my-2" href="#" id="navbarDropdownMore" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<div class="media">
+<img class="align-self-center rounded rounded-circle mr-1 flex-shrink-0" style="width: 45px; height: 45px;" src="https://www.gravatar.com/avatar/87cf33cd3bbb1868657ecec6797b44c9?s=500&amp;d=mp">
+<span id="NO_badge_cont" class="NO_visible"><span id="NO_badge" class="NO_visible"></span></span>
+<p class="align-self-center p-0 m-0 dropdown-toggle"></p>
+</div>
+</a>
+<div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMore">
+<a class="dropdown-item" href="/account/notifications/"><i class="fa fa-fw fa-bell"></i> Notifications <span class="badge badge-pill badge-danger">9+</span></a>
+<a class="dropdown-item" href="/account/">Manage Account</a>
+<a class="dropdown-item" href="/account/join/"><i class="fa fa-fw fa-star text-warning"></i> Get Full Access</a>
+<a class="dropdown-item" href="/account/bookmarks/"><i class="fa fa-fw fa-bookmark"></i> Bookmarks</a>
+<a class="dropdown-item" href="/account/purchases/"><i class="fa fa-fw fa-shopping-cart"></i> Purchases</a>
+<a class="dropdown-item" href="/account/logout/">Sign Out</a>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="flex-row w-100" style="border-top: 1px dashed #ffc107 !important;">
+<div class="container">
+<a class="link-unstyled mx-auto" href="https://realpython.com/free-courses-march-2020"><p class="my-1 small"><span class="text-warning">😷<strong>Stuck at home?</strong> Enjoy free courses, on&nbsp;us&nbsp;→</span></p></a>
+</div>
+</div>
+</nav>
+<div class="container main-content">
+<div class="row justify-content-center">
+<div class="col-md-11 col-lg-8 article">
+<figure class="embed-responsive embed-responsive-16by9">
+<img class="card-img-top m-0 p-0 embed-responsive-item rounded" style="object-fit: contain;" alt="The Pandas DataFrame: Make Working With Data Delightful" src="https://files.realpython.com/media/A-Guide-to-Pandas-Dataframes_Watermarked.7330c8fd51bb.jpg" width="1920" height="1080" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/A-Guide-to-Pandas-Dataframes_Watermarked.7330c8fd51bb.jpg&amp;w=480&amp;sig=09e1c8acea9da8540b80fcb394dadbf4ac5765a5 480w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/A-Guide-to-Pandas-Dataframes_Watermarked.7330c8fd51bb.jpg&amp;w=960&amp;sig=8e9071c1ecf00d9aff644e920b1ca61981344d83 960w, https://files.realpython.com/media/A-Guide-to-Pandas-Dataframes_Watermarked.7330c8fd51bb.jpg 1920w" sizes="75vw">
+</figure>
+<h1>The Pandas DataFrame: Make Working With Data Delightful</h1>
+<p class="mb-0">
+<span class="text-muted">by <a class="text-muted" href="#author">Mirko Stojiljkovic</a>
+<span class="ml-2 mr-1 fa fa-comments"></span><a class="text-muted" href="#reader-comments"><span class="disqus-comment-count">0 Comments</span></a>
+<a href="/account/join/"><i class="ml-2 mr-1 fa fa-star text-muted"></i></a>
+<span class="ml-2 fa fa-tags"></span>
+<a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+<a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+<div class="d-flex flex-row justify-content-between my-2">
+</div>
+</p>
+<div class="article-body">
+<div class="bg-light sidebar-module sidebar-module-inset" id="toc">
+<p class="h3 mb-2 text-muted">Table of Contents</p>
+<div class="toc">
+<ul>
+<li><a href="#introducing-the-pandas-dataframe">Introducing the Pandas DataFrame</a></li>
+<li><a href="#creating-a-pandas-dataframe">Creating a Pandas DataFrame</a><ul>
+<li><a href="#creating-a-pandas-dataframe-with-dictionaries">Creating a Pandas DataFrame With Dictionaries</a></li>
+<li><a href="#creating-a-pandas-dataframe-with-lists">Creating a Pandas DataFrame With Lists</a></li>
+<li><a href="#creating-a-pandas-dataframe-with-numpy-arrays">Creating a Pandas DataFrame With NumPy Arrays</a></li>
+<li><a href="#creating-a-pandas-dataframe-from-files">Creating a Pandas DataFrame From Files</a></li>
+</ul>
+</li>
+<li><a href="#retrieving-labels-and-data">Retrieving Labels and Data</a><ul>
+<li><a href="#pandas-dataframe-labels-as-sequences">Pandas DataFrame Labels as Sequences</a></li>
+<li><a href="#data-as-numpy-arrays">Data as NumPy Arrays</a></li>
+<li><a href="#data-types">Data Types</a></li>
+<li><a href="#pandas-dataframe-size">Pandas DataFrame Size</a></li>
+</ul>
+</li>
+<li><a href="#accessing-and-modifying-data">Accessing and Modifying Data</a><ul>
+<li><a href="#getting-data-with-accessors">Getting Data With Accessors</a></li>
+<li><a href="#setting-data-with-accessors">Setting Data With Accessors</a></li>
+</ul>
+</li>
+<li><a href="#inserting-and-deleting-data">Inserting and Deleting Data</a><ul>
+<li><a href="#inserting-and-deleting-rows">Inserting and Deleting Rows</a></li>
+<li><a href="#inserting-and-deleting-columns">Inserting and Deleting Columns</a></li>
+</ul>
+</li>
+<li><a href="#applying-arithmetic-operations">Applying Arithmetic Operations</a></li>
+<li><a href="#applying-numpy-and-scipy-functions">Applying NumPy and SciPy Functions</a></li>
+<li><a href="#sorting-a-pandas-dataframe">Sorting a Pandas DataFrame</a></li>
+<li><a href="#filtering-data">Filtering Data</a></li>
+<li><a href="#determining-data-statistics">Determining Data Statistics</a></li>
+<li><a href="#handling-missing-data">Handling Missing Data</a><ul>
+<li><a href="#calculating-with-missing-data">Calculating With Missing Data</a></li>
+<li><a href="#filling-missing-data">Filling Missing Data</a></li>
+<li><a href="#deleting-rows-and-columns-with-missing-data">Deleting Rows and Columns With Missing Data</a></li>
+</ul>
+</li>
+<li><a href="#iterating-over-a-pandas-dataframe">Iterating Over a Pandas DataFrame</a></li>
+<li><a href="#working-with-time-series">Working With Time Series</a><ul>
+<li><a href="#creating-dataframes-with-time-series-labels">Creating DataFrames With Time-Series Labels</a></li>
+<li><a href="#indexing-and-slicing">Indexing and Slicing</a></li>
+<li><a href="#resampling-and-rolling">Resampling and Rolling</a></li>
+</ul>
+</li>
+<li><a href="#plotting-with-pandas-dataframes">Plotting With Pandas DataFrames</a></li>
+<li><a href="#further-reading">Further Reading</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</div>
+</div>
+<div><p>The <a href="https://pandas.pydata.org/pandas-docs/stable/reference/frame.html"><strong>Pandas DataFrame</strong></a> is a <a href="https://pandas.pydata.org/pandas-docs/stable/getting_started/dsintro.html">structure</a> that contains <strong>two-dimensional data</strong> and its corresponding <strong>labels</strong>. DataFrames are widely used in <a href="https://realpython.com/tutorials/data-science/">data science</a>, <a href="https://realpython.com/tutorials/machine-learning/">machine learning</a>, scientific computing, and many other data-intensive fields.</p>
+<p>DataFrames are similar to SQL tables or the spreadsheets that you work with in Excel or Calc. In many cases, DataFrames are faster, easier to use, and more powerful than tables or spreadsheets because they’re an integral part of the <a href="https://www.python.org/about/">Python</a> and <a href="https://numpy.org/#">NumPy</a> ecosystems.</p>
+<p><strong>In this tutorial, you’ll learn:</strong></p>
+<ul>
+<li>What a <strong>Pandas DataFrame</strong> is and how to create one</li>
+<li>How to <strong>access, modify, add, sort, filter, and delete</strong> data</li>
+<li>How to handle <strong>missing values</strong></li>
+<li>How to work with <strong>time-series data</strong></li>
+<li>How to quickly <strong>visualize</strong> data</li>
+</ul>
+<p>It’s time to get started with Pandas DataFrames!</p>
+<div class="alert alert-warning" role="alert"><p><strong>Free Bonus:</strong> <a href="https://realpython.com/bonus/python-mastery-course/" class="alert-link" data-toggle="modal" data-target="#modal-python-mastery-course" data-focus="false">5 Thoughts On Python Mastery</a>, a free course for Python developers that shows you the roadmap and the mindset you'll need to take your Python skills to the next level.</p></div>
+<h2 id="introducing-the-pandas-dataframe">Introducing the Pandas DataFrame</h2>
+<p>Pandas DataFrames are data structures that contain:</p>
+<ul>
+<li><strong>Data</strong> organized in <strong>two dimensions</strong>, rows and columns</li>
+<li><strong>Labels</strong> that correspond to the <strong>rows</strong> and <strong>columns</strong></li>
+</ul>
+<p>You can start working with DataFrames by <a href="https://realpython.com/courses/python-imports-101/">importing</a> Pandas:</p>
+<div class="highlight python repl"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</code></pre></div>
+<p>Now that you have Pandas imported, you can work with DataFrames.</p>
+<p>Imagine you’re using Pandas to analyze data about job candidates for a position developing <a href="https://realpython.com/tutorials/web-dev/">web applications with Python</a>. Say you’re interested in the candidates’ names, cities, ages, and scores on a Python programming test, or <code>py-score</code>:</p>
+<div class="table-responsive">
+<table class="table table-hover">
+<thead>
+<tr>
+<th></th>
+<th><code>name</code></th>
+<th><code>city</code></th>
+<th><code>age</code></th>
+<th><code>py-score</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong><code>101</code></strong></td>
+<td><code>Xavier</code></td>
+<td><code>Mexico City</code></td>
+<td><code>41</code></td>
+<td><code>88.0</code></td>
+</tr>
+<tr>
+<td><strong><code>102</code></strong></td>
+<td><code>Ann</code></td>
+<td><code>Toronto</code></td>
+<td><code>28</code></td>
+<td><code>79.0</code></td>
+</tr>
+<tr>
+<td><strong><code>103</code></strong></td>
+<td><code>Jana</code></td>
+<td><code>Prague</code></td>
+<td><code>33</code></td>
+<td><code>81.0</code></td>
+</tr>
+<tr>
+<td><strong><code>104</code></strong></td>
+<td><code>Yi</code></td>
+<td><code>Shanghai</code></td>
+<td><code>34</code></td>
+<td><code>80.0</code></td>
+</tr>
+<tr>
+<td><strong><code>105</code></strong></td>
+<td><code>Robin</code></td>
+<td><code>Manchester</code></td>
+<td><code>38</code></td>
+<td><code>68.0</code></td>
+</tr>
+<tr>
+<td><strong><code>106</code></strong></td>
+<td><code>Amal</code></td>
+<td><code>Cairo</code></td>
+<td><code>31</code></td>
+<td><code>61.0</code></td>
+</tr>
+<tr>
+<td><strong><code>107</code></strong></td>
+<td><code>Nori</code></td>
+<td><code>Osaka</code></td>
+<td><code>37</code></td>
+<td><code>84.0</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>In this table, the first row contains the <strong>column labels</strong> (<code>name</code>, <code>city</code>, <code>age</code>, and <code>py-score</code>). The first column holds the <strong>row labels</strong> (<code>101</code>, <code>102</code>, and so on). All other cells are filled with the <strong>data values</strong>. </p>
+<p>Now you have everything you need to create a Pandas DataFrame.</p>
+<p>There are several ways to create a Pandas DataFrame. In most cases, you’ll use the <a href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html"><code>DataFrame</code> constructor</a> and provide the data, labels, and other information. You can pass the data as a two-dimensional <a href="https://realpython.com/python-lists-tuples/">list, tuple,</a> or <a href="https://realpython.com/numpy-array-programming/">NumPy array</a>. You can also pass it as a <a href="https://realpython.com/python-dicts/">dictionary</a> or <a href="https://pandas.pydata.org/pandas-docs/stable/getting_started/dsintro.html#series">Pandas <code>Series</code></a> instance, or as one of several other data types not covered in this tutorial.</p>
+<p>For this example, assume you’re using a <a href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries">dictionary</a> to pass the data:</p>
+<div class="highlight python repl"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
+<span class="gp">... </span>    <span class="s1">'name'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'Xavier'</span><span class="p">,</span> <span class="s1">'Ann'</span><span class="p">,</span> <span class="s1">'Jana'</span><span class="p">,</span> <span class="s1">'Yi'</span><span class="p">,</span> <span class="s1">'Robin'</span><span class="p">,</span> <span class="s1">'Amal'</span><span class="p">,</span> <span class="s1">'Nori'</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">'city'</span><span class="p">:</span> <span class="p">[</span><span class="s1">'Mexico City'</span><span class="p">,</span> <span class="s1">'Toronto'</span><span class="p">,</span> <span class="s1">'Prague'</span><span class="p">,</span> <span class="s1">'Shanghai'</span><span class="p">,</span>
+<span class="gp">... </span>             <span class="s1">'Manchester'</span><span class="p">,</span> <span class="s1">'Cairo'</span><span class="p">,</span> <span class="s1">'Osaka'</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">'age'</span><span class="p">:</span> <span class="p">[</span><span class="mi">41</span><span class="p">,</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">33</span><span class="p">,</span> <span class="mi">34</span><span class="p">,</span> <span class="mi">38</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">37</span><span class="p">],</span>
+<span class="gp">... </span>    <span class="s1">'py-score'</span><span class="p">:</span> <span class="p">[</span><span class="mf">88.0</span><span class="p">,</span> <span class="mf">79.0</span><span class="p">,</span> <span class="mf">81.0</span><span class="p">,</span> <span class="mf">80.0</span><span class="p">,</span> <span class="mf">68.0</span><span class="p">,</span> <span class="mf">61.0</span><span class="p">,</span> <span class="mf">84.0</span><span class="p">]</span>
+<span class="gp">... </span><span class="p">}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">row_labels</span> <span class="o">=</span> <span class="p">[</span><span class="mi">101</span><span class="p">,</span> <span class="mi">102</span><span class="p">,</span> <span class="mi">103</span><span class="p">,</span> <span class="mi">104</span><span class="p">,</span> <span class="mi">105</span><span class="p">,</span> <span class="mi">106</span><span class="p">,</span> <span class="mi">107</span><span class="p">]</span>
+</code></pre></div>
+<p><code>data</code> is a <a href="https://realpython.com/python-variables/">Python variable</a> that refers to the dictionary that holds your candidate data. It also contains the labels of the columns: </p>
+<ul>
+<li><code>'name'</code></li>
+<li><code>'city'</code></li>
+<li><code>'age'</code></li>
+<li><code>'py-score'</code> </li>
+</ul>
+<p>Finally, <code>row_labels</code> refers to a list that contains the labels of the rows, which are numbers ranging from <code>101</code> to <code>107</code>.</p>
+<p>Now you’re ready to create a Pandas DataFrame:</p>
+<div class="highlight python repl"><span class="repl-toggle" title="Toggle REPL prompts and output">&gt;&gt;&gt;</span><pre><span></span><code><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">data</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">row_labels</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">df</span>
+<span class="go">       name         city  age  py-score</span>
+<span class="go">101  Xavier  Mexico City   41      88.0</span>
+<span class="go">102     Ann      Toronto   28      79.0</span>
+<span class="go">103    Jana       Prague   33      81.0</span>
+<span class="go">104      Yi     Shanghai   34      80.0</span>
+<span class="go">105   Robin   Manchester   38      68.0</span>
+<span class="go">106    Amal        Cairo   31      61.0</span>
+<span class="go">107    Nori        Osaka   37      84.0</span>
+</code></pre></div>
+<p>That’s it! <code>df</code> is a variable that holds the reference to your Pandas DataFrame. This Pandas DataFrame looks just like the candidate table above and has the following features:</p>
+</div>
+<div style="position:absolute;left:0;margin-top:-300px;height:300px;width:100%;background:linear-gradient(rgba(255, 255, 255, 0), rgba(255, 255, 255, 1));"></div>
+<div class="bg-light rounded py-4 mb-5 shadow shadow-sm mx-n2">
+<div class="col-12 text-center d-block d-md-none">
+<p class="mb-1"><img class="w-50" src="/static/videos/lesson-locked.f5105cfd26db.svg"></p>
+<p class="mx-auto w-100 mb-2 small"><strong>Join us and get access to hundreds of tutorials and a community of expert Pythonistas.</strong></p>
+<p class="mb-0"><a href="/account/join/?utm_source=rp_article_preview&utm_content=pandas-dataframe" class="btn btn-primary btn-sm px-4 mb-0"><i class="fa fa-unlock mr-2"></i>Unlock This Article</a>
+<p class="text-center text-muted mt-2 mb-1">Already a member? <a href="/account/login/">Sign-In</a></p>
+</div>
+<div class="col-12 text-center d-none d-md-block">
+<p class="mb-2"><img class="w-50 mb-2" src="/static/videos/lesson-locked.f5105cfd26db.svg"></p>
+<p class="mx-auto w-50 mb-3">The full article is for members only. <strong>Join us and get access to hundreds of tutorials and a community of expert Pythonistas.</strong></p>
+<p><a href="/account/join/?utm_source=rp_article_preview&utm_content=pandas-dataframe" class="btn btn-primary btn-lg px-4"><i class="fa fa-unlock mr-2"></i>Unlock This Article</a>
+<p class="text-center text-muted mt-2 mb-1">Already a member? <a href="/account/login/">Sign-In</a></p>
+</div>
+</div>
+</div>
+<div class="card mt-3" id="author">
+<p class="card-header h3">About <strong>Mirko Stojiljkovic</strong></p>
+<div class="card-body">
+<div class="container p-0">
+<div class="row">
+<div class="col-12 col-md-3 align-self-center">
+<a href="/team/mstojiljkovic/"><img loading="lazy" src="https://files.realpython.com/media/ms.fdcd0bdc2f4a.png" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/ms.fdcd0bdc2f4a.png&amp;w=60&amp;sig=39623096127be14911f83a6b9ada76ff97dbaa48 60w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/ms.fdcd0bdc2f4a.png&amp;w=120&amp;sig=5e10b93ff2490047b7e41e92b34de8345d726f84 120w, https://files.realpython.com/media/ms.fdcd0bdc2f4a.png 240w" sizes="25vw" class="d-block d-md-none rounded-circle img-fluid w-33 mb-0 mx-auto" alt="Mirko Stojiljkovic"></a>
+<a href="/team/mstojiljkovic/"><img loading="lazy" src="https://files.realpython.com/media/ms.fdcd0bdc2f4a.png" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/ms.fdcd0bdc2f4a.png&amp;w=60&amp;sig=39623096127be14911f83a6b9ada76ff97dbaa48 60w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/ms.fdcd0bdc2f4a.png&amp;w=120&amp;sig=5e10b93ff2490047b7e41e92b34de8345d726f84 120w, https://files.realpython.com/media/ms.fdcd0bdc2f4a.png 240w" sizes="25vw" class="d-none d-md-block rounded-circle img-fluid w-100 mb-0" alt="Mirko Stojiljkovic"></a>
+</div>
+<div class="col mt-3">
+<p>Mirko has a Ph.D. in Mechanical Engineering and works as a university professor. He is a Pythonista who applies hybrid optimization and machine learning methods to support decision making in the energy sector.</p>
+<a href="/team/mstojiljkovic/" class="card-link">» More about Mirko</a>
+</div>
+</div>
+</div>
+</div>
+<hr class="my-0">
+<div class="card-body pb-0">
+<div class="container">
+<div class="row">
+<p><em>Each tutorial at Real Python is created by a team of developers so that it meets our high quality standards. The team members who worked on this tutorial are:</em></p>
+</div>
+<div class="row align-items-center w-100 mx-auto">
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/asantos/"><img loading="lazy" src="https://files.realpython.com/media/asantos-avatar.888c78fffab3.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/asantos-avatar.888c78fffab3.jpg&amp;w=175&amp;sig=a095ca193d3f40e73e6921403c1c43e48c9a4bdc 175w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/asantos-avatar.888c78fffab3.jpg&amp;w=350&amp;sig=28c0dc29376daf4ca29d5f47b3708b873c21af76 350w, https://files.realpython.com/media/asantos-avatar.888c78fffab3.jpg 700w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Aldren Santos"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/asantos/" class="card-link"><p>Aldren</p></a>
+</div>
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/gahjelle/"><img loading="lazy" src="https://files.realpython.com/media/gahjelle.470149ee709e.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gahjelle.470149ee709e.jpg&amp;w=200&amp;sig=5f5c996c1ae71bd7f2f89f547a334d508de2f4bb 200w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/gahjelle.470149ee709e.jpg&amp;w=400&amp;sig=0e74ccf912d97528bda85e7b9e9e5064d69a1169 400w, https://files.realpython.com/media/gahjelle.470149ee709e.jpg 800w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Geir Arne Hjelle"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/gahjelle/" class="card-link"><p>Geir Arne</p></a>
+</div>
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/jjablonski/"><img loading="lazy" src="https://files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg&amp;w=200&amp;sig=d779dbceba743afb659648000525a6a71656ae98 200w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg&amp;w=400&amp;sig=99ce401a9a219f6b406309e90925252be1900dfc 400w, https://files.realpython.com/media/jjablonksi-avatar.e37c4f83308e.jpg 800w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Joanna Jablonski"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/jjablonski/" class="card-link"><p>Joanna</p></a>
+</div>
+</div>
+<div class="row align-items-center w-100 mx-auto">
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/jschmitt/"><img loading="lazy" src="https://files.realpython.com/media/profile-small_js.2f4d0d8da1ca.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/profile-small_js.2f4d0d8da1ca.jpg&amp;w=100&amp;sig=dbe22ef63a4d1f70fac0cd1ea9fdfb9a57a76da2 100w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/profile-small_js.2f4d0d8da1ca.jpg&amp;w=200&amp;sig=6394df58897f010a53ac8802fac53aaca9497edc 200w, https://files.realpython.com/media/profile-small_js.2f4d0d8da1ca.jpg 400w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Jacob Schmitt"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/jschmitt/" class="card-link"><p>Jacob</p></a>
+</div>
+<div class="col-4 col-sm-2 align-self-center">
+<a href="/team/kstratis/"><img loading="lazy" src="https://files.realpython.com/media/kstratis_close.1b78aea9b39f.jpg" srcset="https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/kstratis_close.1b78aea9b39f.jpg&amp;w=60&amp;sig=cf4e6c62a1eb27eef000b9a710b677ea44879aea 60w, https://robocrop.realpython.net/?url=https%3A//files.realpython.com/media/kstratis_close.1b78aea9b39f.jpg&amp;w=121&amp;sig=34083c04caac4599fbf5ee7bda4598fa37533e3f 121w, https://files.realpython.com/media/kstratis_close.1b78aea9b39f.jpg 242w" sizes="10vw" class="rounded-circle img-fluid w-100" alt="Kyle Stratis"></a>
+</div>
+<div class="col pl-0 d-none d-sm-block">
+<a href="/team/kstratis/" class="card-link"><p>Kyle</p></a>
+</div>
+<div class="col-4 col-sm-2 align-self-center"></div>
+<div class="col pl-0 d-none d-sm-block"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="card mt-4" id="reader-comments">
+<p class="card-header h3">What Do You Think?</p>
+<div class="card-body">
+<div class="alert alert-dark">
+<p class="mb-0"><strong>Real Python Comment Policy:</strong> The most useful comments are those written with the goal of learning from or helping out other readers—after reading the whole article and all the earlier comments. Complaints and insults generally won’t make the cut here.</p>
+</div>
+<p>What’s your #1 takeaway or favorite thing you learned? How are you going to put your newfound skills to use? Leave a comment below and let us know.</p>
+<div class="mb-4" id="disqus_thread">
+</div>
+<p class="my-0 text-center"><a class="px-4 btn btn-primary btn-sm mr-2" href="/account/join/">Become a Member</a> to join the conversation.</p>
+</div>
+</div>
+<div class="card mt-4 mb-4">
+<p class="card-header h3">Keep Learning</p>
+<div class="card-body">
+<p class="mb-0">Related Tutorial Categories:
+<a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+<a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+</p>
+</div>
+</div>
+</div>
+<aside class="col-md-7 col-lg-4">
+<div class="card mb-3 bg-secondary">
+<form class="card-body" action="/optins/process/" method="post">
+<div class="form-group">
+<p class="h5 text-muted text-center">— FREE Email Series —</p>
+<p class="h3 text-center">🐍 Python Tricks 💌</p>
+<p><img class="img-fluid rounded" src="/static/pytrick-dict-merge.4201a0125a5e.png" width="738" height="490" alt="Python Tricks Dictionary Merge"></p>
+</div>
+<div class="form-group">
+<input type="hidden" name="csrfmiddlewaretoken" value="FeDPKpUxhz9U9bFUKBMt5FadkDlQVAtNcv4XQpeXA0BjOUXbORHUYePoLNAUrIE6">
+<input type="hidden" name="slug" value="static-python-tricks-sidebar">
+<input type="email" class="form-control form-control-md" name="email" placeholder="Email&hellip;" required>
+</div>
+<button type="submit" name="submit" class="btn btn-primary btn-md btn-block">Get Python Tricks »</button>
+<p class="mb-0 mt-2 text-muted text-center">🔒 No spam. Unsubscribe any time.</p>
+</form>
+</div>
+<div class="sidebar-module sidebar-module-inset border">
+<p class="h4"><a class="link-unstyled" href="/tutorials/all/">All Tutorial Topics</a></p>
+<a href="/tutorials/advanced/" class="badge badge-light text-muted">advanced</a>
+<a href="/tutorials/api/" class="badge badge-light text-muted">api</a>
+<a href="/tutorials/basics/" class="badge badge-light text-muted">basics</a>
+<a href="/tutorials/best-practices/" class="badge badge-light text-muted">best-practices</a>
+<a href="/tutorials/community/" class="badge badge-light text-muted">community</a>
+<a href="/tutorials/databases/" class="badge badge-light text-muted">databases</a>
+<a href="/tutorials/data-science/" class="badge badge-light text-muted">data-science</a>
+<a href="/tutorials/devops/" class="badge badge-light text-muted">devops</a>
+<a href="/tutorials/django/" class="badge badge-light text-muted">django</a>
+<a href="/tutorials/docker/" class="badge badge-light text-muted">docker</a>
+<a href="/tutorials/flask/" class="badge badge-light text-muted">flask</a>
+<a href="/tutorials/front-end/" class="badge badge-light text-muted">front-end</a>
+<a href="/tutorials/intermediate/" class="badge badge-light text-muted">intermediate</a>
+<a href="/tutorials/machine-learning/" class="badge badge-light text-muted">machine-learning</a>
+<a href="/tutorials/python/" class="badge badge-light text-muted">python</a>
+<a href="/tutorials/testing/" class="badge badge-light text-muted">testing</a>
+<a href="/tutorials/tools/" class="badge badge-light text-muted">tools</a>
+<a href="/tutorials/web-dev/" class="badge badge-light text-muted">web-dev</a>
+<a href="/tutorials/web-scraping/" class="badge badge-light text-muted">web-scraping</a>
+</div>
+<div class="sidebar-module sidebar-module-inset p-0" style="overflow:hidden;">
+<div style="display:block;position:relative;">
+<div style="display:block;width:100%;padding-top:100%;"></div>
+<div class="rpad" data-unit="1x1" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;"></div>
+</div>
+</div>
+<div class="sidebar-sticky">
+<div class="sidebar-module sidebar-module-inset border">
+<p class="h4"><a class="link-unstyled" href="#toc">Table of Contents</a></p>
+<div class="toc">
+<ul>
+<li><a href="#introducing-the-pandas-dataframe">Introducing the Pandas DataFrame</a></li>
+<li><a href="#creating-a-pandas-dataframe">Creating a Pandas DataFrame</a><ul>
+<li><a href="#creating-a-pandas-dataframe-with-dictionaries">Creating a Pandas DataFrame With Dictionaries</a></li>
+<li><a href="#creating-a-pandas-dataframe-with-lists">Creating a Pandas DataFrame With Lists</a></li>
+<li><a href="#creating-a-pandas-dataframe-with-numpy-arrays">Creating a Pandas DataFrame With NumPy Arrays</a></li>
+<li><a href="#creating-a-pandas-dataframe-from-files">Creating a Pandas DataFrame From Files</a></li>
+</ul>
+</li>
+<li><a href="#retrieving-labels-and-data">Retrieving Labels and Data</a><ul>
+<li><a href="#pandas-dataframe-labels-as-sequences">Pandas DataFrame Labels as Sequences</a></li>
+<li><a href="#data-as-numpy-arrays">Data as NumPy Arrays</a></li>
+<li><a href="#data-types">Data Types</a></li>
+<li><a href="#pandas-dataframe-size">Pandas DataFrame Size</a></li>
+</ul>
+</li>
+<li><a href="#accessing-and-modifying-data">Accessing and Modifying Data</a><ul>
+<li><a href="#getting-data-with-accessors">Getting Data With Accessors</a></li>
+<li><a href="#setting-data-with-accessors">Setting Data With Accessors</a></li>
+</ul>
+</li>
+<li><a href="#inserting-and-deleting-data">Inserting and Deleting Data</a><ul>
+<li><a href="#inserting-and-deleting-rows">Inserting and Deleting Rows</a></li>
+<li><a href="#inserting-and-deleting-columns">Inserting and Deleting Columns</a></li>
+</ul>
+</li>
+<li><a href="#applying-arithmetic-operations">Applying Arithmetic Operations</a></li>
+<li><a href="#applying-numpy-and-scipy-functions">Applying NumPy and SciPy Functions</a></li>
+<li><a href="#sorting-a-pandas-dataframe">Sorting a Pandas DataFrame</a></li>
+<li><a href="#filtering-data">Filtering Data</a></li>
+<li><a href="#determining-data-statistics">Determining Data Statistics</a></li>
+<li><a href="#handling-missing-data">Handling Missing Data</a><ul>
+<li><a href="#calculating-with-missing-data">Calculating With Missing Data</a></li>
+<li><a href="#filling-missing-data">Filling Missing Data</a></li>
+<li><a href="#deleting-rows-and-columns-with-missing-data">Deleting Rows and Columns With Missing Data</a></li>
+</ul>
+</li>
+<li><a href="#iterating-over-a-pandas-dataframe">Iterating Over a Pandas DataFrame</a></li>
+<li><a href="#working-with-time-series">Working With Time Series</a><ul>
+<li><a href="#creating-dataframes-with-time-series-labels">Creating DataFrames With Time-Series Labels</a></li>
+<li><a href="#indexing-and-slicing">Indexing and Slicing</a></li>
+<li><a href="#resampling-and-rolling">Resampling and Rolling</a></li>
+</ul>
+</li>
+<li><a href="#plotting-with-pandas-dataframes">Plotting With Pandas DataFrames</a></li>
+<li><a href="#further-reading">Further Reading</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<div class="modal fade" id="modal-python-mastery-course" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+<div class="modal-content">
+<div class="modal-header bg-light pt-3 pb-2">
+<div class="container-fluid">
+<div class="row">
+<div class="col-12">
+<div class="progress" style="height: .5rem;">
+<div class="progress-bar progress-bar-striped progress-bar-animated w-50" role="progressbar"></div>
+</div>
+</div>
+<div class="col-12">
+<p class="text-muted text-center mb-0 mt-2">Almost there! Complete this form and click the button below to gain instant access:</p>
+</div>
+</div>
+</div>
+<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+<span aria-hidden="true">&times;</span>
+</button>
+</div>
+<div class="modal-body m-4">
+<div class="container-fluid">
+<div class="row align-items-center">
+<div class="col-12 col-lg-4">
+<img class="img-fluid rounded w-100 mb-4" src="https://files.realpython.com/media/python-logo.8eb72ea6927b.png">
+</div>
+<div class="col">
+<p class="text-center h3 mb-4">5 Thoughts On Python Mastery</p>
+<form class="col-12" action="/optins/process/" method="post">
+<input type="hidden" name="csrfmiddlewaretoken" value="FeDPKpUxhz9U9bFUKBMt5FadkDlQVAtNcv4XQpeXA0BjOUXbORHUYePoLNAUrIE6">
+<input type="hidden" name="slug" value="python-mastery-course">
+<div class="form-group">
+<input type="email" name="email" class="form-control" placeholder="Email Address" required autofocus>
+</div>
+<button name="submit" type="submit" class="btn btn-primary btn-block text-wrap">Start the Class »</button>
+</form>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<footer class="footer">
+<div class="container">
+<div class="w-75 mx-auto my-0">
+<div style="display:block;position:relative;">
+<div style="display:block;width:100%;padding-top:12.5%;"></div>
+<div class="rpad" data-unit="8x1" style="position:absolute;left:0;top:0;right:0;bottom:0;overflow:hidden;"></div>
+</div>
+</div>
+<p class="text-center text-muted w-75 mx-auto">© 2012–2020 Real Python&nbsp;⋅ <a href="/newsletter/">Newsletter</a>&nbsp;⋅ <a href="/podcasts/rpp/">Podcast</a>&nbsp;⋅ <a href="https://www.youtube.com/realpython">YouTube</a>&nbsp;⋅ <a href="https://twitter.com/realpython">Twitter</a>&nbsp;⋅ <a href="https://facebook.com/LearnRealPython">Facebook</a>&nbsp;⋅ <a href="https://www.instagram.com/realpython/">Instagram</a>&nbsp;⋅ <a href="/">Python&nbsp;Tutorials</a>&nbsp;⋅ <a href="/search">Search</a>&nbsp;⋅ <a href="/privacy-policy/">Privacy Policy</a>&nbsp;⋅ <a href="/energy-policy/" class="text-success active">Energy Policy</a>&nbsp;⋅ <a href="/sponsorships/">Advertise</a>&nbsp;⋅ <a href="/contact/">Contact</a><br>❤️ Happy Pythoning!</p>
+</div>
+</footer>
+<script>
+      (function(document, history, location) {
+        var HISTORY_SUPPORT = !!(history && history.pushState);
+
+        var anchorScrolls = {
+          ANCHOR_REGEX: /^#[^ ]+$/,
+          OFFSET_HEIGHT_PX: 120,
+
+          /**
+           * Establish events, and fix initial scroll position if a hash is provided.
+           */
+          init: function() {
+            this.scrollToCurrent();
+            window.addEventListener('hashchange', this.scrollToCurrent.bind(this));
+            document.body.addEventListener('click', this.delegateAnchors.bind(this));
+          },
+
+          /**
+           * Return the offset amount to deduct from the normal scroll position.
+           * Modify as appropriate to allow for dynamic calculations
+           */
+          getFixedOffset: function() {
+            return this.OFFSET_HEIGHT_PX;
+          },
+
+          /**
+           * If the provided href is an anchor which resolves to an element on the
+           * page, scroll to it.
+           * @param  {String} href
+           * @return {Boolean} - Was the href an anchor.
+           */
+          scrollIfAnchor: function(href, pushToHistory) {
+            var match, rect, anchorOffset;
+
+            if(!this.ANCHOR_REGEX.test(href)) {
+              return false;
+            }
+
+            match = document.getElementById(href.slice(1));
+
+            if(match) {
+              rect = match.getBoundingClientRect();
+              anchorOffset = window.pageYOffset + rect.top - this.getFixedOffset();
+              window.scrollTo(window.pageXOffset, anchorOffset);
+
+              // Add the state to history as-per normal anchor links
+              if(HISTORY_SUPPORT && pushToHistory) {
+                history.pushState({}, document.title, location.pathname + href);
+              }
+            }
+
+            return !!match;
+          },
+
+          /**
+           * Attempt to scroll to the current location's hash.
+           */
+          scrollToCurrent: function() {
+            this.scrollIfAnchor(window.location.hash);
+          },
+
+          /**
+           * If the click event's target was an anchor, fix the scroll position.
+           */
+          delegateAnchors: function(e) {
+            var elem = e.target;
+
+            if(
+              elem.nodeName === 'A' &&
+              this.scrollIfAnchor(elem.getAttribute('href'), true)
+            ) {
+              e.preventDefault();
+            }
+          }
+        };
+
+        window.addEventListener(
+          'DOMContentLoaded', anchorScrolls.init.bind(anchorScrolls)
+        );
+      })(window.document, window.history, window.location);
+    </script>
+<script src="/static/jquery.min.220afd743d9e.js"></script>
+<script src="/static/popper.min.1022eaf388cc.js"></script>
+<script src="/static/bootstrap.min.61f338f870fc.js"></script>
+<script src="/static/repl-toggle.366cb6d72340.js"></script>
+<script>window.rp_prop_id = '58946116052';</script>
+<script src="https://srv.realpython.net/tag.js" async></script>
+<script>!function(e,t,n){function a(){var e=t.getElementsByTagName("script")[0],n=t.createElement("script");n.type="text/javascript",n.async=!0,n.src="https://beacon-v2.helpscout.net",e.parentNode.insertBefore(n,e)}if(e.Beacon=n=function(t,n,a){e.Beacon.readyQueue.push({method:t,options:n,data:a})},n.readyQueue=[],"complete"===t.readyState)return a();e.attachEvent?e.attachEvent("onload",a):e.addEventListener("load",a,!1)}(window,document,window.Beacon||function(){});</script>
+<script>
+window.Beacon('init', 'f6ddfa28-ffa8-423f-b3b1-50e29e420c43')
+
+Beacon("identify", {
+  email: "jpalleau@gmail.com",
+  name: "jpalleau",
+  has_active_subscription: "False",
+  username: "jpalleau",
+  userid: "81814"
+});
+</script>
+</body>
+</html>
